@@ -66,9 +66,6 @@ int main(int argc, char** argv) {
             matmult_ikj_b(A, B, C);
             break;
         case 4:  //part b
-            matmult_jik_b(A, B, C);
-            break;
-        case 5:  //part b
             matmult_jik_b_2(A, B, C);
             break;
 
@@ -78,7 +75,7 @@ int main(int argc, char** argv) {
     ret = end_papi(eventSet);
     std::cout << TYPE << "\t" << N << "\t"
               << ret  << std::endl;
-    printMatrix(C);
+//    printMatrix(C);
 
     flushCache(A);
     flushCache(B);
