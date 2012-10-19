@@ -66,8 +66,12 @@ int main(int argc, char** argv) {
             matmult_ikj_b(A, B, C);
             break;
         case 4:  //part b
+            matmult_jik_b(A, B, C);
+            break;
+        case 5:  //part b
             matmult_jik_b_2(A, B, C);
             break;
+
     }
 
     /* Stop  clocking    */
