@@ -78,7 +78,7 @@ int main(int argc, char** argv) {
     ret = end_papi(eventSet);
     std::cout << TYPE << "\t" << N << "\t"
               << ret  << std::endl;
-//    printMatrix(C);
+    printMatrix(C);
 
     flushCache(A);
     flushCache(B);
@@ -137,13 +137,10 @@ void matmult_ikj_b(double* A, double* B, double* C) {
  */
 void matmult_jik_b(double* A, double* B, double* C) {
     for (unsigned j = 0; j < N; ++j) {
-        for (unsigned i = 0; i < N; i+=4) {
+        for (unsigned i = 0; i < N; i+=5) {
 
-            register double c0, c1, c2, c3;
-            c0 = 0.0;
-            c1 = 0.0;
-            c2 = 0.0;
-            c3 = 0.0;
+            register double c0, c1, c2, c3 ,c4;
+            c0 = c1 = c2 = c3 = c4 = 0.0;
 
             for (unsigned k = 0; k < N; ++k) {
                 register double b0;
@@ -152,11 +149,13 @@ void matmult_jik_b(double* A, double* B, double* C) {
                 c1 += A(i+1, k) * b0;
                 c2 += A(i+2, k) * b0;
                 c3 += A(i+3, k) * b0;
+                c4 += A(i+4, k) * b0;
             }
             C(i,   j) += c0;
             C(i+1, j) += c1;
             C(i+2, j) += c2;
             C(i+3, j) += c3;
+            C(i+4, j) += c4;
         }
     }
 }
