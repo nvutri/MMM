@@ -4,7 +4,7 @@
  * Unrolling loop j, i
  * Regiser Blocking
  */
-void matmult_ikj_b(double* A, double* B, double* C) {
+void matmult_ikj_b_1_4(double* A, double* B, double* C) {
     for (unsigned i = 0; i < N; ++i) {
         for (unsigned k = 0; k < N; ++k) {
             register double a0 = A(i,k);
@@ -20,7 +20,7 @@ void matmult_ikj_b(double* A, double* B, double* C) {
     }
 }
 /**
- * part b 1 _ 4
+ * part b 1_6
  */
 void matmult_jik_b_1_6(double* A, double* B, double* C) {
     for (unsigned j = 0; j < N; ++j) {
@@ -111,16 +111,16 @@ void matmult_jik_b_1_5(double* A, double* B, double* C) {
 }
 
 /**
- * NU = 2; MU = 4;
+ * NU = 2; MU = 3;
 */
-void matmult_jik_b_2_4(double* A, double* B, double* C) {
+void matmult_jik_b_2_3(double* A, double* B, double* C) {
     for (unsigned j = 0; j < N; j+=2) {
-        for (unsigned i = 0; i < N; i+=4) {
+        for (unsigned i = 0; i < N; i+=3) {
 
-            register double c00, c01, c02, c03,
-                            c10, c11, c12, c13;
-            c00 = c01 = c02 = c03 = 0;
-            c10 = c11 = c12 = c13 = 0;
+            register double c00, c01, c02,
+                            c10, c11, c12;
+            c00 = c01 = c02  = 0;
+            c10 = c11 = c12  = 0;
 
             for (unsigned k = 0; k < N; ++k) {
                 register double b0, b1;
@@ -129,22 +129,18 @@ void matmult_jik_b_2_4(double* A, double* B, double* C) {
                 c00 += A(i,   k) * b0;
                 c01 += A(i+1, k) * b0;
                 c02 += A(i+2, k) * b0;
-                c03 += A(i+3, k) * b0;
 
                 c10 += A(i,   k) * b1;
                 c11 += A(i+1, k) * b1;
                 c12 += A(i+2, k) * b1;
-                c13 += A(i+3, k) * b1;
             }
             C(i,   j) += c00;
             C(i+1, j) += c01;
             C(i+2, j) += c02;
-            C(i+3, j) += c03;
 
             C(i,   j+1) += c10;
             C(i+1, j+1) += c11;
             C(i+2, j+1) += c12;
-            C(i+3, j+1) += c13;
         }
     }
 }

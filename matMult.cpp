@@ -15,10 +15,11 @@
 void matmult_ikj_a(double* A, double* B, double* C) ;
 void matmult_jik_a(double* A, double* B, double* C) ;
 
-void matmult_ikj_b(double* A, double* B, double* C) ;
+void matmult_ikj_b_1_4(double* A, double* B, double* C) ;
 void matmult_jik_b_1_6(double* A, double* B, double* C) ;
 void matmult_jik_b_1_4(double* A, double* B, double* C) ;
 void matmult_jik_b_1_5(double* A, double* B, double* C) ;
+void matmult_jik_b_2_3(double* A, double* B, double* C) ;
 
 /* papi and matrix function declarations*/
 void init_papi();
@@ -58,25 +59,25 @@ int main(int argc, char** argv) {
 
     switch (TYPE) {
         case 1:  //part a
-            matmult_ikj_a(A, B, C);
+//            matmult_ikj_a(A, B, C);
             break;
         case 2:  //part a
-            matmult_jik_a(A, B, C);
+//            matmult_jik_a(A, B, C);
             break;
 
         case 3:  //part b
-            matmult_ikj_b(A, B, C);
+            matmult_ikj_b_1_4(A, B, C);
             break;
 
         case 4:  //part b
-            matmult_jik_b_1_6(A, B, C);
+            matmult_jik_b_2_3(A, B, C);
             break;
         case 5:  //part b
             matmult_jik_b_1_4(A, B, C);
             break;
 
         case 6:  //part b
-            matmult_jik_b_1_5(A, B, C);
+//            matmult_jik_b_1_5(A, B, C);
             break;
     }
 
