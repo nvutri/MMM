@@ -144,3 +144,29 @@ void matmult_jik_b_2_3(double* A, double* B, double* C) {
         }
     }
 }
+
+/**
+ * part b 1_3
+ */
+void matmult_jik_b_1_3(double* A, double* B, double* C) {
+    for (unsigned j = 0; j < N; ++j) {
+        for (unsigned i = 0; i < N; i+=3) {
+
+            register double c0, c1, c2;
+            c0 = 0.0;
+            c1 = 0.0;
+            c2 = 0.0;
+
+            for (unsigned k = 0; k < N; ++k) {
+                register double b0;
+                b0  = B(k,   j);
+                c0 += A(i,   k) * b0;
+                c1 += A(i+1, k) * b0;
+                c2 += A(i+2, k) * b0;
+            }
+            C(i,   j) += c0;
+            C(i+1, j) += c1;
+            C(i+2, j) += c2;
+        }
+    }
+}
