@@ -7,6 +7,8 @@
 #include <stdlib.h>
 #include <iostream>
 #include <string>
+#include <time.h>
+
 #include "matMult.h"
 #include "partA.h"
 #include "partB.h"
@@ -83,8 +85,13 @@ int main(int argc, char** argv) {
 
     /* Stop  clocking    */
     ret = end_papi(eventSet);
-    std::cout << TYPE << "\t" << N << "\t"
-              << ret  << std::endl;
+    int t = clock();
+    std::cout << TYPE << "\t"
+              <<    N << "\t"
+              << ret  << "\t\t "
+              << ((float)t)/CLOCKS_PER_SEC
+              << std::endl;
+
 //    printMatrix(C);
 
     flushCache(A);
