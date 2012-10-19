@@ -3,6 +3,10 @@
 *.lo
 *.o
 
+# Project ignoring files
+MATMULT
+papi*/*
+
 # Compiled Dynamic libraries
 *.so
 
