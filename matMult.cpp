@@ -61,10 +61,10 @@ int main(int argc, char** argv) {
 
     switch (TYPE) {
         case 1:  //part a
-//            matmult_ikj_a(A, B, C);
+            matmult_ikj_a(A, B, C);
             break;
         case 2:  //part a
-//            matmult_jik_a(A, B, C);
+            matmult_jik_a(A, B, C);
             break;
 
         case 3:  //part b
@@ -79,7 +79,7 @@ int main(int argc, char** argv) {
             break;
 
         case 6:  //part b
-//            matmult_jik_b_1_5(A, B, C);
+            matmult_jik_b_1_5(A, B, C);
             break;
     }
 
