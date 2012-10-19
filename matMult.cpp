@@ -16,7 +16,7 @@ void matmult_ikj_a(double* A, double* B, double* C) ;
 void matmult_jik_a(double* A, double* B, double* C) ;
 
 void matmult_ikj_b(double* A, double* B, double* C) ;
-void matmult_jik_b_1_3(double* A, double* B, double* C) ;
+void matmult_jik_b_1_6(double* A, double* B, double* C) ;
 void matmult_jik_b_1_4(double* A, double* B, double* C) ;
 void matmult_jik_b_1_5(double* A, double* B, double* C) ;
 
@@ -69,7 +69,7 @@ int main(int argc, char** argv) {
             break;
 
         case 4:  //part b
-            matmult_jik_b_1_3(A, B, C);
+            matmult_jik_b_1_6(A, B, C);
             break;
         case 5:  //part b
             matmult_jik_b_1_4(A, B, C);
