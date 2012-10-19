@@ -26,8 +26,6 @@ double* alloc(int SIZE) {
 void flushCache(double* matrix) {
     /* destroy the matrix */
     free(matrix);
-    matrix = alloc(3 * N);  //3*N to flush cache for sure
-    free(matrix);
 }
 
 void printMatrix(double* X) {

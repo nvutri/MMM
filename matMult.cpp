@@ -74,7 +74,7 @@ int main(int argc, char** argv) {
     ret = end_papi(eventSet);
     std::cout << TYPE << "\t" << N << "\t"
               << ret  << std::endl;
-    printMatrix(C);
+//    printMatrix(C);
 
     flushCache(A);
     flushCache(B);
@@ -128,6 +128,9 @@ void matmult_ikj_b(double* A, double* B, double* C) {
     }
 }
 
+/**
+ *  NU = 1; MU = 4;
+ */
 void matmult_jik_b(double* A, double* B, double* C) {
     for (unsigned j = 0; j < N; ++j) {
         for (unsigned i = 0; i < N; i+=4) {
@@ -151,7 +154,45 @@ void matmult_jik_b(double* A, double* B, double* C) {
             C(i+2, j) += c2;
             C(i+3, j) += c3;
         }
-
     }
-
 }
+
+/**
+ * NU = 2; MU = 4;
+
+void matmult_jik_b(double* A, double* B, double* C) {
+    for (unsigned j = 0; j < N; j+=2) {
+        for (unsigned i = 0; i < N; i+=4) {
+
+            register double c00, c01, c02, c03,
+                            c10, c11, c12, c13;
+            c00 = c01 = c02 = c03 = 0;
+            c10 = c11 = c12 = c13 = 0;
+
+            for (unsigned k = 0; k < N; ++k) {
+                register double b0, b1;
+                b0  = B(k,   j);
+                b1  = B(k, j+1);
+                c00 += A(i,   k) * b0;
+                c01 += A(i+1, k) * b0;
+                c02 += A(i+2, k) * b0;
+                c03 += A(i+3, k) * b0;
+
+                c10 += A(i,   k) * b1;
+                c11 += A(i+1, k) * b1;
+                c12 += A(i+2, k) * b1;
+                c13 += A(i+3, k) * b1;
+            }
+            C(i,   j) += c00;
+            C(i+1, j) += c01;
+            C(i+2, j) += c02;
+            C(i+3, j) += c03;
+
+            C(i,   j+1) += c10;
+            C(i+1, j+1) += c11;
+            C(i+2, j+1) += c12;
+            C(i+3, j+1) += c13;
+        }
+    }
+}
+*/
