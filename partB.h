@@ -53,12 +53,12 @@ void matmult_jik_b_1_6(double* A, double* B, double* C, unsigned N) {
     }
 }
 /**
- * part b 1 _ 4
+ * part b NU = 1 MU = 4
  */
 void matmult_jik_b_1_4(double* A, double* B, double* C, unsigned N) {
     for (unsigned j = 0; j < N; ++j) {
         for (unsigned i = 0; i < N; i += 4) {
-
+            // micro kernel
             register double c0, c1, c2, c3;
             c0 = 0.0;
             c1 = 0.0;
