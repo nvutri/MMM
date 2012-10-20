@@ -13,6 +13,7 @@
 #include "partA.h"
 #include "partB.h"
 #include "partC.h"
+#include "partD.h"
 
 /*MMM function declarations */
 //part A
@@ -29,6 +30,8 @@ void matmult_jik_b_4_1(double* A, double* B, double* C, unsigned N);
 void matmult_jik_b_1_8(double* A, double* B, double* C, unsigned N);
 //part C
 void matmult_jik_c(double* A, double* B, double* C, unsigned N, unsigned NB);
+//part D
+void matmult_jik_d_4_1(double* A, double* B, double* C, unsigned N);
 
 /* papi and matrix function declarations*/
 void init_papi();
@@ -83,16 +86,18 @@ int main(int argc, char** argv) {
 
 void partC(double* A, double* B, double* C, unsigned N, unsigned NB) {
     //  NB from 16 -> 23
+    // Mini kernel jik_b_1_4
     matmult_jik_c(A, B, C, N, NB);
     std::cout << NB;
 }
 
 void partB(double* A, double* B, double* C, unsigned N, unsigned TYPE) {
-    const std::string TYPE_STRING[11] = {
+    const std::string TYPE_STRING[12] = {
             " ", "ikj_a", "jik_a", "ikj_b_1_4",
             "jik_b_1_3", "jik_b_1_6", "jik_b_1_4",
             "jik_b_1_5", "jik_b_2_3",
-            "jik_b_4_1", "jik_b_1_8" };
+            "jik_b_4_1", "jik_b_1_8",
+            "jik_d_4_1"};
 
     switch (TYPE) {
         case 1:  //part a
@@ -133,6 +138,11 @@ void partB(double* A, double* B, double* C, unsigned N, unsigned TYPE) {
         case 10:  //part b
             matmult_jik_b_1_8(A, B, C, N);
             break;
+
+        case 11:  //part d
+            matmult_jik_d_4_1(A, B, C, N);
+            break;
+
     }
     std::cout << TYPE_STRING[ TYPE ];
 }
