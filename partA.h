@@ -2,7 +2,7 @@
  * Simple Matrix Multiplication.
  * For Part A
  */
-void matmult_ikj_a(double* A, double* B, double* C) {
+void matmult_ikj_a(double* A, double* B, double* C, unsigned N) {
     for (unsigned i = 0; i < N; ++i) {
         for (unsigned k = 0; k < N; ++k) {
             for (unsigned j = 0; j < N; ++j) {
@@ -12,7 +12,7 @@ void matmult_ikj_a(double* A, double* B, double* C) {
     }
 }
 
-void matmult_jik_a(double* A, double* B, double* C) {
+void matmult_jik_a(double* A, double* B, double* C, unsigned N) {
     for (unsigned j = 0; j < N; ++j) {
         for (unsigned i = 0; i < N; ++i) {
             for (unsigned k = 0; k < N; ++k) {

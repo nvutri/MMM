@@ -28,7 +28,7 @@ void flushCache(double* matrix) {
     free(matrix);
 }
 
-void printMatrix(double* X) {
+void printMatrix(double* X, unsigned N) {
     for (int i = 0; i < N; ++i) {
         for (int j = 0; j < N; ++j)
             std::cout << X(i, j) << " ";
@@ -40,7 +40,7 @@ void printMatrix(double* X) {
 /**
  * Initialize Matrixes
  */
-void initialize(double* const X, const double VAL) {
+void initialize(double* const X, const double VAL, unsigned N) {
     //pointer pointing to value
     double* pointer;
     for (int i = 0; i < N; ++i)
