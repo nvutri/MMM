@@ -23,6 +23,7 @@ void matmult_jik_b_1_6(double* A, double* B, double* C) ;
 void matmult_jik_b_1_4(double* A, double* B, double* C) ;
 void matmult_jik_b_1_5(double* A, double* B, double* C) ;
 void matmult_jik_b_2_3(double* A, double* B, double* C) ;
+void matmult_jik_b_4_1(double* A, double* B, double* C) ;
 
 /* papi and matrix function declarations*/
 void init_papi();
@@ -90,6 +91,11 @@ int main(int argc, char** argv) {
         case 8:  //part b
             matmult_jik_b_1_3(A, B, C);
             break;
+
+        case 9:  //part b
+            matmult_jik_b_4_1(A, B, C);
+            break;
+
     }
 
     /* Stop  clocking    */
@@ -102,7 +108,7 @@ int main(int argc, char** argv) {
               << std::endl;
 
 //    printMatrix(C);
-
+//  NB from 16 -> 23
     flushCache(A);
     flushCache(B);
     flushCache(C);
