@@ -30,7 +30,7 @@ void matmult_jik_b_1_8(double* A, double* B, double* C, unsigned N);
 //part C
 void matmult_jik_c(double* A, double* B, double* C, unsigned N, unsigned NB);
 
-const std::string TYPE_STRING[2] = { " ", "ikj_c_1_4" };
+const std::string TYPE_STRING[2] = { " ", "jik_c" };
 
 /* papi and matrix function declarations*/
 void init_papi();
@@ -61,7 +61,7 @@ int main(int argc, char** argv) {
     /*Start clocking*/
     int eventSet = begin_papi(EVENT);
     long long ret;
-    matmult_jik_c(A, B, C, N, 8);
+    matmult_jik_c(A, B, C, N, 4);
 
     /* Stop  clocking    */
     ret = end_papi(eventSet);
@@ -69,7 +69,7 @@ int main(int argc, char** argv) {
     std::cout << TYPE_STRING[TYPE] << "\t" << N << "\t" << ret << "\t\t "
             << ((float) t) / CLOCKS_PER_SEC << std::endl;
 
-    printMatrix(C, N);
+//    printMatrix(C, N);
 //  NB from 16 -> 23
     flushCache(A);
     flushCache(B);
