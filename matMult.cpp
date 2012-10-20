@@ -66,6 +66,14 @@ int main(int argc, char** argv) {
     int eventSet = begin_papi(EVENT);
     long long ret;
 
+    const std::string TYPE_STRING[11] =
+    {   " ","ikj_a", "jik_a",
+        "ikj_b_1_4", "jik_b_1_3",
+        "jik_b_1_6", "jik_b_1_4",
+        "jik_b_1_5", "jik_b_2_3",
+        "jik_b_4_1", "jik_b_1_8"
+    };
+
     switch (TYPE) {
         case 1:  //part a
             matmult_ikj_a(A, B, C, N);
@@ -79,23 +87,23 @@ int main(int argc, char** argv) {
             break;
 
         case 4:  //part b
-            matmult_jik_b_2_3(A, B, C, N);
+//            matmult_jik_b_1_3(A, B, C, N);
             break;
 
         case 5:  //part b
-            matmult_jik_b_1_4(A, B, C, N);
-            break;
-
-        case 6:  //part b
-//            matmult_jik_b_1_5(A, B, C, N);
-            break;
-
-        case 7:  //part b
             matmult_jik_b_1_6(A, B, C, N);
             break;
 
+        case 6:  //part b
+            matmult_jik_b_1_4(A, B, C, N);
+            break;
+
+        case 7:  //part b
+            matmult_jik_b_1_5(A, B, C, N);
+            break;
+
         case 8:  //part b
-//            matmult_jik_b_1_3(A, B, C, N);
+            matmult_jik_b_2_3(A, B, C, N);
             break;
 
         case 9:  //part b
@@ -103,7 +111,7 @@ int main(int argc, char** argv) {
             break;
 
         case 10:  //part b
-//            matmult_jik_b_1_8(A, B, C, N);
+            matmult_jik_b_1_8(A, B, C, N);
             break;
 
     }
