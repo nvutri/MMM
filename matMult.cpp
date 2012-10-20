@@ -66,14 +66,6 @@ int main(int argc, char** argv) {
     int eventSet = begin_papi(EVENT);
     long long ret;
 
-    const std::string TYPE_STRING[11] =
-    {   " ","ikj_a", "jik_a",
-        "ikj_b_1_4", "jik_b_1_3",
-        "jik_b_1_6", "jik_b_1_4",
-        "jik_b_1_5", "jik_b_2_3",
-        "jik_b_4_1", "jik_b_1_8"
-    };
-
     switch (TYPE) {
         case 1:  //part a
             matmult_ikj_a(A, B, C, N);
