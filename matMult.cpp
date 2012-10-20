@@ -31,7 +31,7 @@ void matmult_jik_b_1_8(double* A, double* B, double* C, unsigned N);
 //part C
 void matmult_jik_c(double* A, double* B, double* C, unsigned N, unsigned NB);
 //part D
-void matmult_jik_d_4_1(double* A, double* B, double* C, unsigned N);
+void matmult_jik_d(double* A, double* B, double* C, unsigned N);
 
 /* papi and matrix function declarations*/
 void init_papi();
@@ -70,7 +70,7 @@ int main(int argc, char** argv) {
 
     partB(A, B, C, N, T);
 //    partC(A, B, C, N, T);
-
+//    printMatrix(C, N);
     /* Stop  clocking    */
     ret = end_papi(eventSet);
     int t = clock();
@@ -140,7 +140,8 @@ void partB(double* A, double* B, double* C, unsigned N, unsigned TYPE) {
             break;
 
         case 11:  //part d
-            matmult_jik_d_4_1(A, B, C, N);
+            int NB = 44;
+            matmult_jik_d(A, B, C, N, NB);
             break;
 
     }
