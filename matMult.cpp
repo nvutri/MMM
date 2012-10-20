@@ -47,7 +47,7 @@ const int EVENT = PAPI_FP_OPS;
 int main(int argc, char** argv) {
 
     const unsigned N = atoi(argv[1]);
-    const int TYPE = atoi(argv[2]);
+    const int NB = atoi(argv[2]);
     /* Run the measurement*/
     double* A = alloc(N);
     double* B = alloc(N);
@@ -58,19 +58,19 @@ int main(int argc, char** argv) {
     initialize(B, 2, N);
     initialize(C, 0, N);
     init_papi();
+    //  NB from 16 -> 23
     /*Start clocking*/
     int eventSet = begin_papi(EVENT);
     long long ret;
-    matmult_jik_c(A, B, C, N, 4);
-
+    matmult_jik_c(A, B, C, N, NB);
     /* Stop  clocking    */
     ret = end_papi(eventSet);
     int t = clock();
-    std::cout << TYPE_STRING[TYPE] << "\t" << N << "\t" << ret << "\t\t "
+    std::cout << NB << "\t" << N << "\t" << ret << "\t\t "
             << ((float) t) / CLOCKS_PER_SEC << std::endl;
 
 //    printMatrix(C, N);
-//  NB from 16 -> 23
+
     flushCache(A);
     flushCache(B);
     flushCache(C);
