@@ -8,6 +8,7 @@ MATMULT
 papi*/*
 .cproject
 .project
+run.sh
 
 # Compiled Dynamic libraries
 *.so
