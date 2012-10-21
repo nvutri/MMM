@@ -8,12 +8,14 @@
 #include <iostream>
 #include <string>
 #include <time.h>
+#include <xmmintrin.h>
 
 #include "matMult.h"
 #include "partA.h"
 #include "partB.h"
 #include "partC.h"
 #include "partD.h"
+#include "competition.h"
 
 /*MMM function declarations */
 //part A
@@ -32,6 +34,8 @@ void matmult_jik_b_1_8(double* A, double* B, double* C, unsigned N);
 void matmult_jik_c(double* A, double* B, double* C, unsigned N, unsigned NB);
 //part D
 void matmult_jik_d(double* A, double* B, double* C, unsigned N);
+// Final Version
+void matmult(double* A, double* B, double* C, unsigned N);
 
 /* papi and matrix function declarations*/
 void init_papi();
@@ -68,9 +72,11 @@ int main(int argc, char** argv) {
     int eventSet = begin_papi(EVENT);
     long long ret;
 
-    partB(A, B, C, N, T);
+//    partB(A, B, C, N, T);
 //    partC(A, B, C, N, T);
+    matmult(A, B, C, N);
 //    printMatrix(C, N);
+
     /* Stop  clocking    */
     ret = end_papi(eventSet);
     int t = clock();
