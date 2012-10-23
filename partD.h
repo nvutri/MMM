@@ -37,21 +37,19 @@ void matmult_jik_d_4_1(double* A, double* B, double* C, unsigned N,
             c1 = 0.0;
             c2 = 0.0;
             c3 = 0.0;
-            double* c = &C(i, j);
 
             for (unsigned k = 0; k < KB; ++k) {
                 register double a0;
                 a0 = A(i, k);
-                double* b = &B(k, j);
-                c0 += a0 * b[0];
-                c1 += a0 * b[1];
-                c2 += a0 * b[2];
-                c3 += a0 * b[3];
+                c0 += a0 * B(k, j);
+                c1 += a0 * B(k, j + 1);
+                c2 += a0 * B(k, j + 2);
+                c3 += a0 * B(k, j + 3);
             }
-            c[0] += c0;
-            c[1] += c1;
-            c[2] += c2;
-            c[3] += c3;
+            C(i, j) += c0;
+            C(i, j + 1) += c1;
+            C(i, j + 2) += c2;
+            C(i, j + 3) += c3;
         }
     }
 }
