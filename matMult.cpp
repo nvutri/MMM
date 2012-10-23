@@ -1,21 +1,24 @@
-/* define macros as a neat way for index*/
-#define A(x, y) A[(x) * N + (y)]
-#define B(x, y) B[(x) * N + (y)]
-#define C(x, y) C[(x) * N + (y)]
+/**
+ *  Define macros as a neat way for indexing
+ *  Accessing elements in column order
+ *  */
+#define A(x, y) A[ (y) * N + (x)]
+#define B(x, y) B[ (y) * N + (x)]
+#define C(x, y) C[ (y) * N + (x)]
 
 #include <stdio.h>
 #include <stdlib.h>
 #include <iostream>
 #include <string>
 #include <time.h>
-#include <xmmintrin.h>
+//#include <xmmintrin.h>
 
 #include "matMult.h"
 #include "partA.h"
 #include "partB.h"
 #include "partC.h"
 #include "partD.h"
-#include "competition.h"
+//#include "competition.h"
 
 /*MMM function declarations */
 //part A
@@ -23,13 +26,11 @@ void matmult_ikj_a(double* A, double* B, double* C, unsigned N);
 void matmult_jik_a(double* A, double* B, double* C, unsigned N);
 //part B
 void matmult_ikj_b_1_4(double* A, double* B, double* C, unsigned N);
-void matmult_jik_b_1_3(double* A, double* B, double* C, unsigned N);
-void matmult_jik_b_1_6(double* A, double* B, double* C, unsigned N);
 void matmult_jik_b_1_4(double* A, double* B, double* C, unsigned N);
-void matmult_jik_b_1_5(double* A, double* B, double* C, unsigned N);
-void matmult_jik_b_2_3(double* A, double* B, double* C, unsigned N);
 void matmult_jik_b_4_1(double* A, double* B, double* C, unsigned N);
 void matmult_jik_b_1_8(double* A, double* B, double* C, unsigned N);
+void matmult_jik_b_8_1(double* A, double* B, double* C, unsigned N);
+void matmult_jik_b_4_4(double* A, double* B, double* C, unsigned N);
 //part C
 void matmult_jik_c(double* A, double* B, double* C, unsigned N, unsigned NB);
 //part D
@@ -72,9 +73,9 @@ int main(int argc, char** argv) {
     int eventSet = begin_papi(EVENT);
     long long ret;
 
-//    partB(A, B, C, N, T);
+    partB(A, B, C, N, T);
 //    partC(A, B, C, N, T);
-    matmult(A, B, C, N);
+//    matmult(A, B, C, N);
 //    printMatrix(C, N);
 
     /* Stop  clocking    */
@@ -98,12 +99,14 @@ void partC(double* A, double* B, double* C, unsigned N, unsigned NB) {
 }
 
 void partB(double* A, double* B, double* C, unsigned N, unsigned TYPE) {
-    const std::string TYPE_STRING[12] = {
-            " ", "ikj_a", "jik_a", "ikj_b_1_4",
-            "jik_b_1_3", "jik_b_1_6", "jik_b_1_4",
-            "jik_b_1_5", "jik_b_2_3",
-            "jik_b_4_1", "jik_b_1_8",
-            "jik_d_4_1"};
+    const std::string TYPE_STRING[20] = {
+            " ",
+            "ikj_a",     "jik_a",
+            "ikj_b_1_4",
+            "jik_b_1_4", "jik_b_4_1",
+            "jik_b_1_8", "jik_b_8_1",
+            "jik_b_4_4", "jik_d"
+    };
 
     switch (TYPE) {
         case 1:  //part a
@@ -118,38 +121,30 @@ void partB(double* A, double* B, double* C, unsigned N, unsigned TYPE) {
             break;
 
         case 4:  //part b
-            matmult_jik_b_1_3(A, B, C, N);
-            break;
-
-        case 5:  //part b
-            matmult_jik_b_1_6(A, B, C, N);
-            break;
-
-        case 6:  //part b
             matmult_jik_b_1_4(A, B, C, N);
             break;
 
-        case 7:  //part b
-            matmult_jik_b_1_5(A, B, C, N);
-            break;
-
-        case 8:  //part b
-            matmult_jik_b_2_3(A, B, C, N);
-            break;
-
-        case 9:  //part b
+        case 5:  //part b
             matmult_jik_b_4_1(A, B, C, N);
             break;
 
-        case 10:  //part b
+        case 6:  //part b
             matmult_jik_b_1_8(A, B, C, N);
             break;
 
-        case 11:  //part d
+        case 7:  //part b
+            matmult_jik_b_8_1(A, B, C, N);
+            break;
+
+        case 8:  //part b
+            matmult_jik_b_4_4(A, B, C, N);
+            break;
+
+        case 9:  //part d
             int NB = 44;
             matmult_jik_d(A, B, C, N, NB);
             break;
 
     }
-    std::cout << TYPE_STRING[ TYPE ];
+    std::cout << TYPE_STRING[ TYPE ] << std::endl;
 }

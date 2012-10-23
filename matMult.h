@@ -11,7 +11,7 @@
 
 #ifndef _MATMULT
 #define _MATMULT
-#define X(x, y) X[ (x) * N + (y)]
+#define X(x, y) X[ (y) * N + (x)]
 
 /**
  * Matrix functions: allocate, index, and destroy
