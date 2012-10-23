@@ -17,7 +17,7 @@
 #include "partB.h"
 #include "partC.h"
 #include "partD.h"
-//#include "competition.h"
+#include "competition.h"
 
 /*MMM function declarations */
 //part A
@@ -105,7 +105,8 @@ void partB(double* A, double* B, double* C, unsigned N, unsigned TYPE) {
             "ikj_b_1_4",
             "jik_b_1_4", "jik_b_4_1",
             "jik_b_1_8", "jik_b_8_1",
-            "jik_b_4_4", "jik_d"
+            "jik_b_4_4", "jik_d",
+            "mat_mult"
     };
 
     switch (TYPE) {
@@ -141,8 +142,11 @@ void partB(double* A, double* B, double* C, unsigned N, unsigned TYPE) {
             break;
 
         case 9:  //part d
-            int NB = 40;
-            matmult_jik_d(A, B, C, N, NB);
+            matmult_jik_d(A, B, C, N, 40);
+            break;
+
+        case 10:
+            matmult(A, B, C, N);
             break;
 
     }

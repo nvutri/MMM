@@ -3,6 +3,7 @@
  * Unrolling loop j, i
  * Regiser Blocking
  */
+// NU = 4
 void matmult_ikj_b_1_4(double* A, double* B, double* C, unsigned N) {
     for (unsigned i = 0; i < N; ++i) {
         for (unsigned k = 0; k < N; ++k) {
@@ -75,7 +76,7 @@ void matmult_jik_b_4_1(double* A, double* B, double* C, unsigned N) {
     }
 }
 
-/* NU = 4 MU = 4 */
+/* NU = 4 MU = 1 KU=4 */
 void matmult_jik_b_4_4(double* A, double* B, double* C, unsigned N) {
     for (unsigned j = 0; j < N; j += 4) {
         for (unsigned i = 0; i < N; ++i) {
@@ -128,7 +129,7 @@ void matmult_jik_b_4_4(double* A, double* B, double* C, unsigned N) {
 }
 
 /**
- * NU = 4; MU = 1;
+ * NU = 8; MU = 1;
  */
 void matmult_jik_b_8_1(double* A, double* B, double* C, unsigned N) {
     for (unsigned j = 0; j < N; j += 8) {
@@ -160,7 +161,7 @@ void matmult_jik_b_8_1(double* A, double* B, double* C, unsigned N) {
     }
 }
 /**
- * part b NU = 1 MU = 8
+ * part b NU = 1 MU = 1 KU=8
  */
 void matmult_jik_b_1_8(double* A, double* B, double* C, unsigned N) {
     for (unsigned j = 0; j < N; ++j) {
