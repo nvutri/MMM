@@ -11,7 +11,6 @@
 #include <iostream>
 #include <string>
 #include <time.h>
-//#include <xmmintrin.h>
 
 #include "matMult.h"
 #include "partA.h"
@@ -142,7 +141,7 @@ void partB(double* A, double* B, double* C, unsigned N, unsigned TYPE) {
             break;
 
         case 9:  //part d
-            int NB = 44;
+            int NB = 40;
             matmult_jik_d(A, B, C, N, NB);
             break;
 
