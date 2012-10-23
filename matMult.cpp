@@ -72,17 +72,18 @@ int main(int argc, char** argv) {
     /*Start clocking*/
     int eventSet = begin_papi(EVENT);
     long long ret;
-
+    int start = clock();
     partB(A, B, C, N, T);
 //    partC(A, B, C, N, T);
 //    matmult(A, B, C, N);
 //    printMatrix(C, N);
 
     /* Stop  clocking    */
+    int stop = clock();
     ret = end_papi(eventSet);
-    int t = clock();
+    int elapsed_time = stop - start;
     std::cout << "\t" << N << "\t" << ret << "\t\t "
-            << ((float) t) / CLOCKS_PER_SEC << std::endl;
+            << ((float) elapsed_time) / CLOCKS_PER_SEC << std::endl;
 
     flushCache(A);
     flushCache(B);
