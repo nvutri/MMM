@@ -1,4 +1,6 @@
-//#include <algorithm>
+#define _A(x, y) _A[ (y) * N + (x)]
+#define _B(x, y) _B[ (y) * NB + (x)]
+
 void matmult_4_4(double* A, double* B, double* C, unsigned N, unsigned NB);
 void matmult_1_1(double* A, double* B, double* C, unsigned N);
 
@@ -8,15 +10,26 @@ void matmult_1_1(double* A, double* B, double* C, unsigned N);
  * NU = KU = 4
  */
 void matmult(double* A, double* B, double* C, unsigned N) {
-    unsigned NB = 16; //TODO: Change back to 64
+
+    unsigned NB = 64;
     int LB = N % NB;  // Left over tile
     int NN = N - LB;  // The nice size
+
+    double* _A = alloc(N);
+    double* _B = (double*) malloc(sizeof(double) * N * NB);
+    // Copy Full A
+    memcpy(_A, A, N * N * sizeof(double));
+
     for (unsigned j = 0; j < NN; j += NB) {
+
+        // Copy a panel of B
+        memcpy(_B, B, N * NB * sizeof(double));
+
         for (unsigned i = 0; i < NN; i += NB) {
             for (unsigned k = 0; k < NN; k += NB) {
                 /*sub matrix a, b, c*/
-                double* a = &A(i, k);
-                double* b = &B(k, j);
+                double* a = &_A(i, k);
+                double* b = &_B(k, j);
                 double* c = &C(i, j);
                 matmult_4_4(a, b, c, N, NB);
             }
@@ -28,7 +41,7 @@ void matmult(double* A, double* B, double* C, unsigned N) {
         for (unsigned j = 0; j < NN; ++j) {
             for (unsigned i = 0; i < NN; ++i) {
                 for (unsigned k = NN; k < N; ++k) {
-                    C(i,j) += A(i,k) * B(k,j);
+                    C(i, j) += A(i, k) * B(k, j);
                 }
             }
         }
@@ -36,7 +49,7 @@ void matmult(double* A, double* B, double* C, unsigned N) {
         for (unsigned j = 0; j < N; ++j) {
             for (unsigned i = NN; i < N; ++i) {
                 for (unsigned k = 0; k < N; ++k) {
-                    C(i,j) += A(i,k) * B(k,j);
+                    C(i, j) += A(i, k) * B(k, j);
                 }
             }
         }
@@ -45,24 +58,25 @@ void matmult(double* A, double* B, double* C, unsigned N) {
         for (unsigned j = NN; j < N; ++j) {
             for (unsigned i = 0; i < N - LB; ++i) {
                 for (unsigned k = 0; k < N; ++k) {
-                    C(i,j) += A(i,k) * B(k,j);
+                    C(i, j) += A(i, k) * B(k, j);
                 }
             }
         }
-
     }
+    free(_A);
+    free(_B);
 }
 
-void matmult_4_4(double* A, double* B, double* C, unsigned N, unsigned NB) {
+void matmult_4_4(double* _A, double* _B, double* C, unsigned N, unsigned NB) {
     for (unsigned j = 0; j < NB; j += 4) {
         for (unsigned i = 0; i < NB; ++i) {
             register double c0, c1, c2, c3, a0;
             c0 = c1 = c2 = c3 = 0.0;
-            double* a = &A(0, i);
-            double* b0 = &B(0, j);
-            double* b1 = &B(0, j + 1);
-            double* b2 = &B(0, j + 2);
-            double* b3 = &B(0, j + 3);
+            double* a = &_A(0, i);
+            double* b0 = &_B(0, j);
+            double* b1 = &_B(0, j + 1);
+            double* b2 = &_B(0, j + 2);
+            double* b3 = &_B(0, j + 3);
 
             for (unsigned k = 0; k < NB; k += 4) {
                 a0 = *a++;
@@ -106,3 +120,5 @@ void matmult_4_4(double* A, double* B, double* C, unsigned N, unsigned NB) {
         }
     }
 }
+#undef _A
+#undef _B
