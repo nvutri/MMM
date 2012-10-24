@@ -1,111 +1,78 @@
 #include <algorithm>
-#include <emmintrin.h>
+void matmult_4_4(double* A, double* B, double* C, unsigned N, unsigned JB,
+                 unsigned KB, unsigned IB);
+void matmult(double* A, double* B, double* C, unsigned N) {
 
-void printMatrix(const double* X, unsigned N);
-void matmult_jik_2_1(const double* A, const double* B, double* C, unsigned N,
-                     unsigned JB, unsigned KB, unsigned IB);
-void matmult_jik_1_2(const double* A, const double* B, double* C, unsigned N,
-                     unsigned JB, unsigned KB, unsigned IB);
+    unsigned NB = 64;
+    for (unsigned j = 0; j < N; j += NB) {
+        int JB = std::min(N - j, NB);
+        for (unsigned i = 0; i < N; i += NB) {
+            int IB = std::min(N - i, NB);
+            for (unsigned k = 0; k < N; k += NB) {
+                int KB = std::min(N - k, NB);
 
-//void matmult(double* A, double* B, double* C, unsigned N) {
-//    unsigned NB = 64;
-//    for (unsigned j = 0; j < N; j += NB) {
-//        int JB = std::min(N - j, NB);
-//        for (unsigned i = 0; i < N; i += NB) {
-//            int IB = std::min(N - i, NB);
-//            for (unsigned k = 0; k < N; k += NB) {
-//                int KB = std::min(N - k, NB);
-//
-//                /*sub matrix a, b, c*/
-//                const double* a = (double*) &A(i, k);
-//                const double* b = (double*) &B(k, j);
-//                double* c = (double*) &C(i, j);
-//                matmult_jik_2_1(a, b, c, N, JB, KB, IB);
-//            }
-//        }
-//    }
-//}
-void matmult_jik_1_2(const double* A, const double* B, double* C, unsigned N,
-                     unsigned JB, unsigned KB, unsigned IB) {
-    for (unsigned j = 0; j < JB; ++j) {
-        for (unsigned i = 0; i < IB; i += 2) {
-            // micro kernel
-            __m128d rA, rB, rC, rT;
-            rC = _mm_load_sd(&C(i, j));
-
-            for (unsigned k = 0; k < KB; ++k) {
-                rA = _mm_load_sd(&A(i, k));
-                rB = _mm_set_sd(B(k, j));
-                rT = _mm_mul_sd(rA, rB);
-                rC = _mm_add_sd(rT, rC);
-
+                /*sub matrix a, b, c*/
+                double* a = &A(i, k);
+                double* b = &B(k, j);
+                double* c = (double*) &C(i, j);
+                matmult_4_4(a, b, c, N, JB, KB, IB);
             }
-            _mm_store_sd(&C(i, j), rC);
         }
     }
 }
 
-/**
- * NU = 4; MU = 1;
- */
-void matmult_jik_2_1(const double* A, const double* B, double* C, unsigned N,
-                     unsigned JB, unsigned KB, unsigned IB) {
-    for (unsigned j = 0; j < JB; j += 2) {
+void matmult_4_4(double* A, double* B, double* C, unsigned N, unsigned JB,
+                 unsigned KB, unsigned IB) {
+    for (unsigned j = 0; j < JB; j += 4) {
         for (unsigned i = 0; i < IB; ++i) {
-            __m128d rA, rB, rC, rT;
-            rC = _mm_load_sd(&C(i, j));
-            for (unsigned k = 0; k < KB; ++k) {
-                rA = _mm_load_sd(&A(i, k));
-                rB = _mm_load_sd(&B(k, j));
-                rT = _mm_mul_sd(rA, rB);
-                rC = _mm_add_sd(rT, rC);
+            register double c0, c1, c2, c3, a0;
+            c0 = c1 = c2 = c3 = 0.0;
+            double* a  = &A(0, i);
+            double* b0 = &B(0, j);
+            double* b1 = &B(0, j + 1);
+            double* b2 = &B(0, j + 2);
+            double* b3 = &B(0, j + 3);
+
+            for (unsigned k = 0; k < KB; k += 4) {
+                a0 = *a++;
+
+                c0 += a0 * b0[0];
+                c1 += a0 * b1[0];
+                c2 += a0 * b2[0];
+                c3 += a0 * b3[0];
+
+                a0 = *a++;
+
+                c0 += a0 * b0[1];
+                c1 += a0 * b1[1];
+                c2 += a0 * b2[1];
+                c3 += a0 * b3[1];
+
+                a0 = *a++;
+
+                c0 += a0 * b0[2];
+                c1 += a0 * b1[2];
+                c2 += a0 * b2[2];
+                c3 += a0 * b3[2];
+
+                a0 = *a++;
+
+                c0 += a0 * b0[3];
+                c1 += a0 * b1[3];
+                c2 += a0 * b2[3];
+                c3 += a0 * b3[3];
+
+                b0+=4;
+                b1+=4;
+                b2+=4;
+                b3+=4;
+
             }
-            _mm_store_sd(&C(i, j), rC);
-//            printMatrix(C, N);
+            C(i, j)     += c0;
+            C(i, j + 1) += c1;
+            C(i, j + 2) += c2;
+            C(i, j + 3) += c3;
         }
     }
 }
-
-void matmult(const double* A, const double* B, double* C, unsigned N) {
-    for (unsigned j = 0; j < N; j += 1) {
-        for (unsigned i = 0; i < N; ++i) {
-            __m128d rA, rB, rC, rT;
-            rC = _mm_load_sd(&C(i, j));
-            for (unsigned k = 0; k < N; ++k) {
-                rA = _mm_load_sd(&A(i, k));
-                rB = _mm_load_sd(&B(k, j));
-                rT = _mm_mul_sd(rA, rB);
-                rC = _mm_add_sd(rT, rC);
-            }
-            _mm_store_sd(&C(i, j), rC);
-        }
-    }
-}
-
-//void matmult_jik_1_4(const double* A, const double* B, double* C, unsigned N,
-//                       unsigned JB, unsigned KB, unsigned IB)  {
-//    for (unsigned j = 0; j < JB; ++j) {
-//        for (unsigned i = 0; i < IB; i += 4) {
-//            // micro kernel
-////            __m128d rA, rB, rC;
-//            register double c0, c1, c2, c3;
-//            c0 = c1 = c2 = c3 = 0.0;
-////            rA = __m_load_sd
-//            for (unsigned k = 0; k < KB; ++k) {
-//                register double b0;
-//                const double* a = &A(i, k);
-//                b0 = B(k, j);
-//                c0 += a[0] * b0;
-//                c1 += a[1] * b0;
-//                c2 += a[2] * b0;
-//                c3 += a[3] * b0;
-//            }
-//            double* c = &C(i, j);
-//            c[0] += c0;
-//            c[1] += c1;
-//            c[2] += c2;
-//            c[3] += c3;
-//        }
-//    }
-//}
 
