@@ -28,7 +28,7 @@ void flushCache(double* matrix) {
     free(matrix);
 }
 
-void printMatrix(double* X, unsigned N) {
+void printMatrix(const double* X, unsigned N) {
     for (int i = 0; i < N; ++i) {
         for (int j = 0; j < N; ++j)
             std::cout << X(i, j) << " ";

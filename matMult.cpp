@@ -35,13 +35,14 @@ void matmult_jik_c(double* A, double* B, double* C, unsigned N, unsigned NB);
 //part D
 void matmult_jik_d(double* A, double* B, double* C, unsigned N);
 // Final Version
-void matmult(double* A, double* B, double* C, unsigned N);
+//void matmult(double* A, double* B, double* C, unsigned N);
+void matmult(const double* A, const double* B, double* C, unsigned N);
 
 /* papi and matrix function declarations*/
 void init_papi();
 int begin_papi(int Event);
 long_long end_papi(int EventSet);
-void printMatrix(double* X, unsigned N);
+void printMatrix(const double* X, unsigned N);
 void initialize(double* const X, const double VAL);
 void flushCache(double* matrix);
 double* alloc(int SIZE);
@@ -75,7 +76,7 @@ int main(int argc, char** argv) {
     partB(A, B, C, N, T);
 //    partC(A, B, C, N, T);
 //    matmult(A, B, C, N);
-//    printMatrix(C, N);
+    printMatrix(C, N);
 
     /* Stop  clocking    */
     int stop = clock();
@@ -130,19 +131,19 @@ void partB(double* A, double* B, double* C, unsigned N, unsigned TYPE) {
             break;
 
         case 6:  //part b
-            matmult_jik_b_1_8(A, B, C, N);
+//            matmult_jik_b_1_8(A, B, C, N);
             break;
 
         case 7:  //part b
-            matmult_jik_b_8_1(A, B, C, N);
+//            matmult_jik_b_8_1(A, B, C, N);
             break;
 
         case 8:  //part b
-            matmult_jik_b_4_4(A, B, C, N);
+//            matmult_jik_b_4_4(A, B, C, N);
             break;
 
         case 9:  //part d
-            matmult_jik_d(A, B, C, N, 40);
+//            matmult_jik_d(A, B, C, N, 64); //NB = 64
             break;
 
         case 10:
