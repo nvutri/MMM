@@ -4,6 +4,9 @@
 void matmult_jik_d_1_8(double* A, double* B, double* C, unsigned N,
                        unsigned JB, unsigned KB, unsigned IB);
 
+void matmult_jik_d_4_4(double* A, double* B, double* C, unsigned N,
+                       unsigned JB, unsigned KB, unsigned IB);
+
 void matmult_jik_d(double* A, double* B, double* C, unsigned N, unsigned NB) {
     for (unsigned j = 0; j < N; j += NB) {
         int JB = std::min(N-j, NB);
@@ -79,3 +82,60 @@ void matmult_jik_d_1_8(double* A, double* B, double* C, unsigned N,
     free(_A);
     free(_B);
 }
+//void matmult_jik_d_4_4(double* A, double* B, double* C, unsigned N,
+//                       unsigned JB, unsigned KB, unsigned IB)  {
+//    for (unsigned j = 0; j < JB; j += 4) {
+//        for (unsigned i = 0; i < IB; ++i) {
+//            register double c0, c1, c2, c3;
+//            c0 = 0.0;
+//            c1 = 0.0;
+//            c2 = 0.0;
+//            c3 = 0.0;
+//            double* b0 = &B(0, j);
+//            double* b1 = &B(0, j + 1);
+//            double* b2 = &B(0, j + 2);
+//            double* b3 = &B(0, j + 3);
+//
+//            for (unsigned k = 0; k < KB; k+=4) {
+//                double a0 = A(i, k);
+//
+//                c0 += a0 * b0[0];
+//                c1 += a0 * b1[0];
+//                c2 += a0 * b2[0];
+//                c3 += a0 * b3[0];
+//
+//                double a1 = A(i, k + 1);
+//
+//                c0 += a1 * b0[1];
+//                c1 += a1 * b1[1];
+//                c2 += a1 * b2[1];
+//                c3 += a1 * b3[1];
+//
+//                double a2 = A(i, k + 2);
+//
+//                c0 += a2 * b0[2];
+//                c1 += a2 * b1[2];
+//                c2 += a2 * b2[2];
+//                c3 += a2 * b3[2];
+//
+//                double a3 = A(i, k + 3);
+//
+//                c0 += a3 * b0[3];
+//                c1 += a3 * b1[3];
+//                c2 += a3 * b2[3];
+//                c3 += a3 * b3[3];
+//
+//                ++b0;
+//                ++b1;
+//                ++b2;
+//                ++b3;
+//
+//            }
+//            C(i, j    ) += c0;
+//            C(i, j + 1) += c1;
+//            C(i, j + 2) += c2;
+//            C(i, j + 3) += c3;
+//        }
+//    }
+//}
+//
