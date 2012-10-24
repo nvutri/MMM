@@ -1,51 +1,48 @@
 // define sub-block A_
-#define _A(x, y) _A[ (y) * KB + (x)]
+#define _A(x, y) _A[ (y) * N + (x)]
+#define _B(x, y) _B[ (y) * JB + (x)]
+#define _C(x, y) _C[ (y) * JB + (x)]
 
 void matmult_jik_d_1_8(double* A, double* B, double* C, unsigned N,
                        unsigned JB, unsigned KB, unsigned IB);
 
-void matmult_jik_d_4_4(double* A, double* B, double* C, unsigned N,
-                       unsigned JB, unsigned KB, unsigned IB);
-
 void matmult_jik_d(double* A, double* B, double* C, unsigned N, unsigned NB) {
+    // Local storage
+    double* _A = alloc(N);
+    double* _B = (double*) malloc(sizeof(double) * N * NB);
+    // Copy Full A
+    memcpy( _A, A, N*N* sizeof(double));
+
     for (unsigned j = 0; j < N; j += NB) {
         int JB = std::min(N-j, NB);
+
+        // Copy a panel of B
+        memcpy( _B, &B(0, j), N*JB* sizeof(double));
+
         for (unsigned i = 0; i < N; i += NB) {
             int IB = std::min(N-i, NB);
             for (unsigned k = 0; k < N; k += NB) {
                 int KB = std::min(N-k, NB);
-
                 /*sub matrix a, b, c*/
-                double* a = &A(i, k);
-                double* b = &B(k, j);
+                double* a = &_A(i, k);
+                double* b = &_B(k, j);
                 double* c = &C(i, j);
                 matmult_jik_d_1_8(a, b, c, N, JB, KB, IB);
             }
         }
     }
+    //Deallocate A and B
+    free(_A);
+    free(_B);
 }
 
 /**
  * NU = 1; MU = 8;
  * mini-kernel MMM
  */
-void matmult_jik_d_1_8(double* A, double* B, double* C, unsigned N,
+void matmult_jik_d_1_8(double* _A, double* _B, double* C, unsigned N,
                        unsigned JB, unsigned KB, unsigned IB)  {
-    // Local storage
-    double* _A = alloc(IB);
-    double* _B = (double*) malloc(sizeof(double) * KB);
-
-    // Copy Full A
-    for (unsigned k = 0; k< KB; ++k)
-        for (unsigned i = 0; i< IB; ++i)
-            _A(i, k) = A(i, k);
-
     for (unsigned j = 0; j < JB; ++j) {
-        // Copy a panel of B
-        for (unsigned k = 0; k < KB; ++k){
-            _B[k] = B(k, j);
-        }
-        // Do computation, no copy a tile for C
         for (unsigned i = 0; i < IB; i += 8) {
 
             register double c0, c1, c2, c3, c4, c5, c6 , c7;
@@ -55,7 +52,7 @@ void matmult_jik_d_1_8(double* A, double* B, double* C, unsigned N,
                 register double b0;
                 double* a = &_A(i, k);
 
-                b0  = _B[k];
+                b0  = _B(k, j);
 
                 c0 += a[0] * b0;
                 c1 += a[1] * b0;
@@ -78,7 +75,4 @@ void matmult_jik_d_1_8(double* A, double* B, double* C, unsigned N,
         }
     }
 
-    //Deallocate A and B
-    free(_A);
-    free(_B);
 }
