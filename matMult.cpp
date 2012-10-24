@@ -20,7 +20,7 @@
 
 #include "matMult.h"
 #include "partA.h"
-#include "partB.h"
+#include "  "
 #include "partC.h"
 #include "partD.h"
 #include "competition.h"
@@ -81,7 +81,7 @@ int main(int argc, char** argv) {
     init_papi();
     /*Start clocking*/
     int eventSet = begin_papi(EVENT);
-    double ret;
+    long long ret;
     int start = clock();
 
     if (strcmp(part, "A") == 0)
@@ -107,7 +107,7 @@ int main(int argc, char** argv) {
 
     /* Stop  clocking    */
     int stop = clock();
-    ret = (double)end_papi(eventSet) / (double)1000000000; // Cacluate GFlops
+    ret = end_papi(eventSet);
     int elapsed_time = stop - start;
     std::cout << "\t" << N << "\t" << ret << "\t\t "
             << ((float) elapsed_time) / CLOCKS_PER_SEC << std::endl;
