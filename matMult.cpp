@@ -1,7 +1,13 @@
 /**
+ * Project: Matrix Multiplication
+ * Student: Tri Nguyen, Zang Ze
+ * Notes: We took helps and advices from Professor Robert Van De Geijn.
+ */
+
+/**
  *  Define macros as a neat way for indexing
  *  Accessing elements in column order
- *  */
+ */
 #define A(x, y) A[ (y) * N + (x)]
 #define B(x, y) B[ (y) * N + (x)]
 #define C(x, y) C[ (y) * N + (x)]
@@ -75,7 +81,7 @@ int main(int argc, char** argv) {
     init_papi();
     /*Start clocking*/
     int eventSet = begin_papi(EVENT);
-    long long ret;
+    double ret;
     int start = clock();
 
     if (strcmp(part, "A") == 0)
@@ -101,7 +107,7 @@ int main(int argc, char** argv) {
 
     /* Stop  clocking    */
     int stop = clock();
-    ret = end_papi(eventSet);
+    ret = (double)end_papi(eventSet) / (double)1000000000; // Cacluate GFlops
     int elapsed_time = stop - start;
     std::cout << "\t" << N << "\t" << ret << "\t\t "
             << ((float) elapsed_time) / CLOCKS_PER_SEC << std::endl;

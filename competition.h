@@ -2,9 +2,13 @@
 void matmult_4_4(double* A, double* B, double* C, unsigned N, unsigned NB);
 void matmult_1_1(double* A, double* B, double* C, unsigned N);
 
+/**
+ * Helps and Ideas from Professor Robert Van De Geijn.
+ * NB = 16.
+ * NU = KU = 4
+ */
 void matmult(double* A, double* B, double* C, unsigned N) {
-
-    unsigned NB = 16;
+    unsigned NB = 16; //TODO: Change back to 64
     int LB = N % NB;  // Left over tile
     int NN = N - LB;  // The nice size
     for (unsigned j = 0; j < NN; j += NB) {
@@ -18,30 +22,35 @@ void matmult(double* A, double* B, double* C, unsigned N) {
             }
         }
     }
-//    printMatrix(C, N);
-//    if (LB > 0) {
-//        // Resolving the leftover tile
-//        // right tile of A x bottom panel of B
-//        for (unsigned j = 0; j < N; j += LB) {
-//            for (unsigned i = 0; i < NN; i += LB) {
-//                unsigned k = NN;
-//                double* a = &A(i, k);
-//                double* b = &B(k, j);
-//                double* c = &C(i, j);
-//                matmult_1_1(a, b, c, LB);
-//            }
-//        }
-//
-////        for (unsigned j = 0; j < N; j += LB) {
-////            for (unsigned k = 0; k < NN; k += LB) {
-////                unsigned i = NN;
-////                double* a = &A(i, k);
-////                double* b = &B(k, j);
-////                double* c = &C(i, j);
-////                matmult_1_1(a, b, c, LB);
-////            }
-////        }
-//    }
+    // Resolving the leftover tile
+    if (LB > 0) {
+        // NBxNB of C
+        for (unsigned j = 0; j < NN; ++j) {
+            for (unsigned i = 0; i < NN; ++i) {
+                for (unsigned k = NN; k < N; ++k) {
+                    C(i,j) += A(i,k) * B(k,j);
+                }
+            }
+        }
+        // Bottom panel of C
+        for (unsigned j = 0; j < N; ++j) {
+            for (unsigned i = NN; i < N; ++i) {
+                for (unsigned k = 0; k < N; ++k) {
+                    C(i,j) += A(i,k) * B(k,j);
+                }
+            }
+        }
+        // Right tile of C.
+        // Watch out for overlapping LBxLB at bottom right corner
+        for (unsigned j = NN; j < N; ++j) {
+            for (unsigned i = 0; i < N - LB; ++i) {
+                for (unsigned k = 0; k < N; ++k) {
+                    C(i,j) += A(i,k) * B(k,j);
+                }
+            }
+        }
+
+    }
 }
 
 void matmult_4_4(double* A, double* B, double* C, unsigned N, unsigned NB) {
@@ -94,16 +103,6 @@ void matmult_4_4(double* A, double* B, double* C, unsigned N, unsigned NB) {
             C(i, j + 1) += c1;
             C(i, j + 2) += c2;
             C(i, j + 3) += c3;
-        }
-    }
-}
-
-void matmult_1_1(double* A, double* B, double* C, unsigned N) {
-    for (unsigned j = 0; j < N; ++j) {
-        for (unsigned i = 0; i < N; ++i) {
-            for (unsigned k = 0; k < N; ++k) {
-                C(i, j) += A(i, k) * B(k, j);
-            }
         }
     }
 }
