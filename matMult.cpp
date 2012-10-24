@@ -9,7 +9,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <iostream>
-#include <string>
+#include <string.h>
 #include <time.h>
 
 #include "matMult.h"
@@ -34,9 +34,6 @@ void matmult_jik_b_4_4(double* A, double* B, double* C, unsigned N);
 void matmult_jik_c(double* A, double* B, double* C, unsigned N, unsigned NB);
 //part D
 void matmult_jik_d(double* A, double* B, double* C, unsigned N);
-// Final Version
-//void matmult(double* A, double* B, double* C, unsigned N);
-void matmult(const double* A, const double* B, double* C, unsigned N);
 
 /* papi and matrix function declarations*/
 void init_papi();
@@ -49,9 +46,14 @@ double* alloc(int SIZE);
 
 
 /* Enable to separate partB and partC */
+void partA(double* A, double* B, double* C, unsigned N, unsigned TYPE);
 void partB(double* A, double* B, double* C, unsigned N, unsigned TYPE);
 void partC(double* A, double* B, double* c, unsigned N, unsigned NB);
+void partD(double* A, double* B, double* c, unsigned N, unsigned NB);
 
+// Final Version
+//void matmult(double* A, double* B, double* C, unsigned N);
+void matmult(const double* A, const double* B, double* C, unsigned N);
 
 /*Global variable*/
 const int EVENT = PAPI_FP_OPS;
@@ -59,6 +61,8 @@ const int EVENT = PAPI_FP_OPS;
 int main(int argc, char** argv) {
     const unsigned N = atoi(argv[1]);
     const unsigned T = atoi(argv[2]);
+    const char*  part = argv[3];
+
     double* A = alloc(N);
     double* B = alloc(N);
     double* C = alloc(N);
@@ -73,10 +77,27 @@ int main(int argc, char** argv) {
     int eventSet = begin_papi(EVENT);
     long long ret;
     int start = clock();
-    partB(A, B, C, N, T);
-//    partC(A, B, C, N, T);
-//    matmult(A, B, C, N);
-    printMatrix(C, N);
+
+    if (strcmp(part, "A") == 0)
+        partA(A, B, C, N, T);
+
+    if (strcmp(part, "B") == 0)
+        partB(A, B, C, N, T);
+
+    if (strcmp(part, "C") == 0)
+        partC(A, B, C, N, T);
+
+    if (strcmp(part, "D") == 0)
+        partD(A, B, C, N, T);
+
+    if (strcmp(part, "F") == 0)
+        matmult(A, B, C, N);
+
+    if (argc > 4){
+        const char*  debug = argv[4];
+        if (strcmp(debug, "-v") == 0)
+            printMatrix(C, N);
+    }
 
     /* Stop  clocking    */
     int stop = clock();
@@ -99,15 +120,15 @@ void partC(double* A, double* B, double* C, unsigned N, unsigned NB) {
     std::cout << NB;
 }
 
-void partB(double* A, double* B, double* C, unsigned N, unsigned TYPE) {
-    const std::string TYPE_STRING[20] = {
+void partD(double* A, double* B, double* C, unsigned N, unsigned TYPE) {
+    const unsigned NB = 64;
+    matmult_jik_d(A, B, C, N, NB);
+}
+
+void partA(double* A, double* B, double* C, unsigned N, unsigned TYPE) {
+    const std::string TYPE_STRING[5] = {
             " ",
-            "ikj_a",     "jik_a",
-            "ikj_b_1_4",
-            "jik_b_1_4", "jik_b_4_1",
-            "jik_b_1_8", "jik_b_8_1",
-            "jik_b_4_4", "jik_d",
-            "mat_mult"
+            "ikj_a", "jik_a",
     };
 
     switch (TYPE) {
@@ -117,39 +138,41 @@ void partB(double* A, double* B, double* C, unsigned N, unsigned TYPE) {
         case 2:  //part a
             matmult_jik_a(A, B, C, N);
             break;
+    }
+    std::cout << TYPE_STRING[ TYPE ] << std::endl;
+}
+void partB(double* A, double* B, double* C, unsigned N, unsigned TYPE) {
+    const std::string TYPE_STRING[20] = {
+            " ",
+            "ikj_b_1_4", "jik_b_1_4",
+            "jik_b_4_1", "jik_b_1_8",
+            "jik_b_8_1", "jik_b_4_4",
+    };
 
-        case 3:  //part b
+    switch (TYPE) {
+        case 1:  //part b
             matmult_ikj_b_1_4(A, B, C, N);
             break;
 
-        case 4:  //part b
+        case 2:  //part b
             matmult_jik_b_1_4(A, B, C, N);
             break;
 
-        case 5:  //part b
+        case 3:  //part b
             matmult_jik_b_4_1(A, B, C, N);
             break;
 
+        case 4:  //part b
+            matmult_jik_b_1_8(A, B, C, N);
+            break;
+
+        case 5:  //part b
+            matmult_jik_b_8_1(A, B, C, N);
+            break;
+
         case 6:  //part b
-//            matmult_jik_b_1_8(A, B, C, N);
+            matmult_jik_b_4_4(A, B, C, N);
             break;
-
-        case 7:  //part b
-//            matmult_jik_b_8_1(A, B, C, N);
-            break;
-
-        case 8:  //part b
-//            matmult_jik_b_4_4(A, B, C, N);
-            break;
-
-        case 9:  //part d
-//            matmult_jik_d(A, B, C, N, 64); //NB = 64
-            break;
-
-        case 10:
-            matmult(A, B, C, N);
-            break;
-
     }
     std::cout << TYPE_STRING[ TYPE ] << std::endl;
 }
