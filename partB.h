@@ -108,15 +108,15 @@ void matmult_jik_b_4_4(double* A, double* B, double* C, unsigned N) {
                 double a2 = A(i, k + 2);
 
                 c0 += a2 * b0[2];
-                c1 += a2 * b2[2];
+                c1 += a2 * b1[2];
                 c2 += a2 * b2[2];
                 c3 += a2 * b3[2];
 
                 double a3 = A(i, k + 3);
 
                 c0 += a3 * b0[3];
-                c1 += a3 * b3[3];
-                c2 += a3 * b3[3];
+                c1 += a3 * b1[3];
+                c2 += a3 * b2[3];
                 c3 += a3 * b3[3];
 
             }
