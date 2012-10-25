@@ -17,9 +17,7 @@ void matmult_jik_d(double* A, double* B, double* C, unsigned N, unsigned NB) {
         int JB = std::min(N - j, NB);
 
         // Copy a panel of B
-        for (unsigned jj = 0; jj < JB; ++jj)
-            for (unsigned kk = 0; kk < N; ++kk)
-                _B(kk, jj) = B(kk, jj);
+        memcpy(_B, &B(0, j), sizeof(double) * N * JB);
 
         for (unsigned i = 0; i < N; i += NB) {
             int IB = std::min(N - i, NB);
