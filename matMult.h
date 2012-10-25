@@ -1,111 +1,122 @@
-/**
- * All MMM Helper methods
- */
-#include <papi.h>
-#include <papiStdEventDefs.h>
-#include <stdio.h>
-#include <stdlib.h>
-#include <iostream>
-#include <string>
+#define _A(x, y) _A[ (y) * NB + (x)]
+#define A(x, y) A[ (y) * N + (x)]
+#define B(x, y) B[ (y) * N + (x)]
+#define C(x, y) C[ (y) * N + (x)]
 
-
-#ifndef _MATMULT
-#define _MATMULT
-#define X(x, y) X[ (y) * N + (x)]
+void matmult_4_4(double* A, double* B, double* C, unsigned N, unsigned NB);
+void matmult_1_1(double* A, double* B, double* C, unsigned N);
 
 /**
- * Matrix functions: allocate, index, and destroy
- * N is global variable
+ * Helps and Ideas from Professor Robert Van De Geijn.
+ * NB = 16.
+ * NU = KU = 4
  */
-extern int N;
+void matmult(double* A, double* B, double* C, unsigned N) {
 
-double* alloc(int SIZE) {
-    return (double*) malloc(sizeof(double) * SIZE * SIZE);
-}
+    unsigned NB = 64;
+    int LB = N % NB;  // Left over tile
+    int NN = N - LB;  // The nice size
 
-void flushCache(double* matrix) {
-    /* destroy the matrix */
-    free(matrix);
-}
-
-void printMatrix(const double* X, unsigned N) {
-    for (int i = 0; i < N; ++i) {
-        for (int j = 0; j < N; ++j)
-            std::cout << X(i, j) << " ";
-        std::cout << std::endl;
-    }
-    std::cout << std::endl;
-}
-
-/**
- * Initialize Matrixes
- */
-void initialize(double* const X, const double VAL, unsigned N) {
-    //pointer pointing to value
-    double* pointer;
-    for (int i = 0; i < N; ++i)
-        for (int j = 0; j < N; ++j) {
-            if (VAL == 0)
-                X(i, j) = VAL;
-            else
-                X(i, j) = i + j;
+    for (unsigned j = 0; j < NN; j += NB) {
+        for (unsigned i = 0; i < NN; i += NB) {
+            for (unsigned k = 0; k < NN; k += NB) {
+                /*sub matrix a, b, c*/
+                double* a = &A(i, k);
+                double* b = &B(k, j);
+                double* c = &C(i, j);
+                matmult_4_4(a, b, c, N, NB);
+            }
         }
-}
-
-/**
- * Papi Handler
- */
-void handle_error(int retval) {
-    printf("PAPI error %d: %s\n", retval, PAPI_strerror(retval));
-    exit(1);
-}
-
-void init_papi() {
-    int retval = PAPI_library_init(PAPI_VER_CURRENT);
-    if (retval != PAPI_VER_CURRENT && retval < 0) {
-        printf("PAPI library version mismatch!\n");
-        exit(1);
     }
-    if (retval < 0)
-        handle_error(retval);
-
-//    std::cout << "PAPI Version Number: MAJOR: " << PAPI_VERSION_MAJOR(retval)
-//            << " MINOR: " << PAPI_VERSION_MINOR(retval) << " REVISION: "
-//            << PAPI_VERSION_REVISION(retval) << "\n";
-//
+    // Resolving the leftover tile
+    if (LB > 0) {
+        // NBxNB of C
+        for (unsigned j = 0; j < NN; ++j) {
+            for (unsigned i = 0; i < NN; ++i) {
+                for (unsigned k = NN; k < N; ++k) {
+                    C(i, j) += A(i, k) * B(k, j);
+                }
+            }
+        }
+        // Bottom panel of C
+        for (unsigned j = 0; j < N; ++j) {
+            for (unsigned i = NN; i < N; ++i) {
+                for (unsigned k = 0; k < N; ++k) {
+                    C(i, j) += A(i, k) * B(k, j);
+                }
+            }
+        }
+        // Right tile of C.
+        // Watch out for overlapping LBxLB at bottom right corner
+        for (unsigned j = NN; j < N; ++j) {
+            for (unsigned i = 0; i < N - LB; ++i) {
+                for (unsigned k = 0; k < N; ++k) {
+                    C(i, j) += A(i, k) * B(k, j);
+                }
+            }
+        }
+    }
 }
 
-int begin_papi(int Event) {
-    int EventSet = PAPI_NULL;
-    int rv;
-    /* Create the Event Set */
-    if ((rv = PAPI_create_eventset(&EventSet)) != PAPI_OK)
-        handle_error(rv);
-    if ((rv = PAPI_add_event(EventSet, Event)) != PAPI_OK)
-        handle_error(rv);
-    /* Start counting events in the Event Set */
-    if ((rv = PAPI_start(EventSet)) != PAPI_OK)
-        handle_error(rv);
-    return EventSet;
+void matmult_4_4(double* A, double* B, double* C, unsigned N, unsigned NB) {
+    // Local storage
+    double* _A = alloc(NB);
+
+    // Copy Full A
+    memcpy(_A, A, NB*NB*sizeof(double));
+
+
+    for (unsigned j = 0; j < NB; j += 4) {
+        for (unsigned i = 0; i < NB; ++i) {
+            register double c0, c1, c2, c3, a0;
+            c0 = c1 = c2 = c3 = 0.0;
+            double* a = &_A(0, i);
+            double* b0 = &B(0, j);
+            double* b1 = &B(0, j + 1);
+            double* b2 = &B(0, j + 2);
+            double* b3 = &B(0, j + 3);
+
+            for (unsigned k = 0; k < NB; k += 4) {
+                a0 = *a++;
+
+                c0 += a0 * b0[0];
+                c1 += a0 * b1[0];
+                c2 += a0 * b2[0];
+                c3 += a0 * b3[0];
+
+                a0 = *a++;
+
+                c0 += a0 * b0[1];
+                c1 += a0 * b1[1];
+                c2 += a0 * b2[1];
+                c3 += a0 * b3[1];
+
+                a0 = *a++;
+
+                c0 += a0 * b0[2];
+                c1 += a0 * b1[2];
+                c2 += a0 * b2[2];
+                c3 += a0 * b3[2];
+
+                a0 = *a++;
+
+                c0 += a0 * b0[3];
+                c1 += a0 * b1[3];
+                c2 += a0 * b2[3];
+                c3 += a0 * b3[3];
+
+                b0 += 4;
+                b1 += 4;
+                b2 += 4;
+                b3 += 4;
+
+            }
+            C(i, j) += c0;
+            C(i, j + 1) += c1;
+            C(i, j + 2) += c2;
+            C(i, j + 3) += c3;
+        }
+    }
+    free(_A);
 }
-
-long_long end_papi(int EventSet) {
-    long_long retval;
-    int rv;
-
-    /* get the values */
-    if ((rv = PAPI_stop(EventSet, &retval)) != PAPI_OK)
-        handle_error(rv);
-
-    /* Remove all events in the eventset */
-    if ((rv = PAPI_cleanup_eventset(EventSet)) != PAPI_OK)
-        handle_error(rv);
-
-    /* Free all memory and data structures, EventSet must be empty. */
-    if ((rv = PAPI_destroy_eventset(&EventSet)) != PAPI_OK)
-        handle_error(rv);
-
-    return retval;
-}
-
-#endif
+#undef _A

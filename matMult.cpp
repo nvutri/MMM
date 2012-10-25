@@ -18,12 +18,12 @@
 #include <string.h>
 #include <time.h>
 
-#include "matMult.h"
+#include "papiHandler.h"
 #include "partA.h"
 #include "partB.h"
 #include "partC.h"
 #include "partD.h"
-#include "competition.h"
+#include "matMult.h"
 
 /*MMM function declarations */
 //part A
